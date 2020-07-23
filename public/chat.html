@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+</head>
+<body>
+<div id="app">
+    <div>
+        <p>Status to Chat-API: {{status_connected}}</p>
+    </div>
+    <label>
+        <span>Obtener code QR</span>
+        <button type="button" @click="getCodeQR()">Obtener Code QR</button>
+        <button type="button" @click="clearCodeQR()">Limpiar Code QR</button>
+    </label>
+    <div>
+        <img :src="image.qr" alt="Not image" width="25%"/>
+    </div>
+</div>
+
+<script>
+    new Vue({
+      el: '#app',
+      data: ()=>({
+        status_connected: 'Disconnected',
+        input: {
+            message: null,
+        },
+        image:{
+          qr: 'https://app.chat-api.com/assets/images/example_qr_code.png'
+        }
+      }),
+      mounted(){
+        axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
+      },
+      async created(){
+        // axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
+        await this.load()
+      },
+      methods: {
+        async load() {
+          await this.getStatusConnection()
+          // await this.getCodeQR()
+        },
+        async getStatusConnection () {
+          this.status_connected = 'Connecting...'
+          const url = `http://127.0.0.1:9000/connect`
+          axios.get(url).then((r) => {
+            setTimeout(() => {
+              this.status_connected = r.data
+            }, 1500)
+          }).catch((e) => {
+            this.status_connected = 'Disconnected'
+            console.error(e)
+          })
+        },
+        async getCodeQR () {
+          // const url = `http://127.0.0.1:9000/chat`
+          // const params = {
+          //   params: {},
+          // }
+          // axios.get(url, params).then((r) => {
+          //   this.input.message = r.data
+          // }).catch((e) => {
+          //   console.error(e)
+          // })
+          this.image.qr = 'https://app.chat-api.com/assets/images/example_qr_code.png'
+        },
+        async clearCodeQR (){
+          this.image.qr = null
+        }
+      },
+    })
+</script>
+
+</body>
+</html>
