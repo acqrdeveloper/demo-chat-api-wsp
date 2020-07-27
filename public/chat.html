@@ -128,7 +128,7 @@
         },
         async getStatusConnection () {
           this.status_connected = 'Connecting...'
-          const url = `http://127.0.0.1:9000/connect`
+          const url = `https://devinbox.securitec.pe:446/connect`
           await axios.get(url).then((r) => {
             setTimeout(() => {
               this.status_connected = r.data
