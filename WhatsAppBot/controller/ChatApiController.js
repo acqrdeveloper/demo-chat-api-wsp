@@ -52,8 +52,6 @@ export default {
         console.log('[LOG] hookChanges', req.data)
         // tmpData.data = req.data
         res.send(req.data)
-    }).catch((e)=>{
-      console.error("[ERROR] hookChanges", e)
     })
   },
 
