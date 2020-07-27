@@ -85,6 +85,7 @@
     const API_URL = "https://devinbox.securitec.pe:446"
     const CHATAPI_URL = "https://eu159.chat-api.com/instance155047"//Cuenta de securitec de gabriela
     const CHATAPI_TOKEN = "ol1liyjmehf87oh7"
+    const INSTANCE = "155047"
 
     new Vue({
       el: '#app',
@@ -139,7 +140,7 @@
             console.log(r.data)
 
             //Validar instancia
-            if(r.data.instanceId === '154076') {
+            if(r.data.instanceId === INSTANCE) {
 
               /*
               //validar estado previo
