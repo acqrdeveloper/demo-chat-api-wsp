@@ -29,7 +29,7 @@
         </label>
 
         <div>
-            <img :src="image.qr" alt="Not image" width="18%"/>
+            <img :src="qr.image" alt="Not image" width="18%"/>
         </div>
 
         <p><hr></p>
@@ -83,15 +83,16 @@
         qr : {
           loading: false,
           used: false,
+          image: null
         },
         status_connected: 'Disconnected',
         // code_qr_used: false,
         input: {
             message: null,
         },
-        image:{
-          qr: null,
-        },
+        // image:{
+        //   qr: null,
+        // },
         message:{
           phone: '51994905237',
           body: null,
@@ -142,6 +143,10 @@
 
               //Validar estado
               if (r.data.status === 'got qr code') {
+
+                if (r.data.substatus === 'expired') {
+                  this.qr.image = null
+                }
 
                 this.qr.used = false
                 this.qr.loading = false
@@ -207,10 +212,8 @@
                 [r.data],
                 {type: r.headers['content-type']}
               )
-              // let imgUrl = URL.createObjectURL(blob)
-              this.image.qr = URL.createObjectURL(blob)
 
-            //   this.message.status = 'mensaje enviado'
+              this.qr.image = URL.createObjectURL(blob)
             }
           }).catch((e) => {
             console.error(e)
