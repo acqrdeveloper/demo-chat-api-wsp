@@ -17,22 +17,27 @@
 
     <p><hr></p>
 
-    <label>
-        <span>Code QR Whatsapp:</span>
-        <p>
-            <button type="button" @click="getCodeQR()">Obtener Code QR</button>
-            <button type="button" @click="clearCodeQR()">Limpiar Code QR</button>
-            <button type="button" @click="logout()">Cerrar Sesion</button>
-        </p>
-    </label>
+    <!--Fuera de Sesión-->
+    <template v-if="!qr.used">
+        <label>
+            <span>Code QR Whatsapp:</span>
+            <p>
+                <button type="button" @click="getCodeQR()">Obtener Code QR</button>
+                <button type="button" @click="clearCodeQR()">Limpiar Code QR</button>
+                <button type="button" @click="logout()">Cerrar Sesion</button>
+            </p>
+        </label>
 
-    <div>
-        <img :src="image.qr" alt="Not image" width="18%"/>
-    </div>
+        <div>
+            <img :src="image.qr" alt="Not image" width="18%"/>
+        </div>
 
-    <p><hr></p>
+        <p><hr></p>
+    </template>
 
-    <!--<template v-if="code_qr_used">-->
+
+    <!--En Sesión-->
+    <template v-if="qr.used">
         <label>
             <span>Enviar Mensaje:</span>
             <p>
@@ -63,7 +68,7 @@
             </p>
             <button type="button" @click="sendMessage()">Enviar mensaje</button> <span>{{message.status}}</span>
         </label>
-    <!--</template>-->
+    </template>
 
 </div>
 
@@ -75,8 +80,12 @@
     new Vue({
       el: '#app',
       data: ()=>({
+        qr : {
+          loading: false,
+          used: false,
+        },
         status_connected: 'Disconnected',
-        code_qr_used: false,
+        // code_qr_used: false,
         input: {
             message: null,
         },
@@ -114,9 +123,55 @@
       methods: {
         async getWebhookTmp(){
           const url = `${API_URL}/mywebhook/chat_api/data`
-          await axios.get(url).then((r)=>{
+          await axios.get(url).then(async (r)=>{
+
             console.log(r)
             console.log(r.data)
+
+            //Validar instancia
+            if(r.data.instanceId === '154076') {
+
+              /*
+              //validar estado previo
+              if (r.data.previous_status === 'loading') {
+                this.qr.loading = true
+              }else if (r.data.previous_status === 'got qr code') {
+                this.qr.loading = false
+              }
+              */
+
+              //Validar estado
+              if (r.data.status === 'got qr code') {
+
+                this.qr.used = false
+                this.qr.loading = false
+                await this.getCodeQR()
+
+              } else if (r.data.status === 'loading') {
+
+                this.qr.used = false
+                this.qr.loading = true
+
+              } else if (r.data.status === 'authenticated'){
+
+                this.qr.loading = false
+                this.qr.used = true
+
+              }
+
+              /*
+              //Validar sub estado
+              if (r.data.substatus === 'loading') {
+                this.qr.loading = true
+              } else if (r.data.substatus === 'normal') {
+                this.qr.loading = false
+              } else if (r.data.substatus === 'authenticated'){
+                this.qr.loading = false
+              }
+              */
+
+            }
+
           }).catch((e)=>{
             console.error("getWebhook",e)
           })
