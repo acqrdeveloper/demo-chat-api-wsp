@@ -68,6 +68,10 @@
 </div>
 
 <script>
+
+    const API_URL = "https://devinbox.securitec.pe:446"
+    const CHATAPI_URL = "https://api.chat-api.com/instance154076"
+
     new Vue({
       el: '#app',
       data: ()=>({
@@ -110,7 +114,7 @@
       },
       methods: {
         async getWebhook(){
-          const url = `https://bin.chat-api.com/1109qj31`
+          const url = `/mywebhook/chat_api`
           await axios.post(url).then((r)=>{
             console.log(r)
             console.log(r.data)
@@ -128,7 +132,7 @@
         },
         async getStatusConnection () {
           this.status_connected = 'Connecting...'
-          const url = `https://devinbox.securitec.pe:446/connect`
+          const url = `${API_URL}/connect`
           await axios.get(url).then((r) => {
             setTimeout(() => {
               this.status_connected = r.data
@@ -141,7 +145,7 @@
         async getCodeQR () {
           // this.image.qr = 'https://api.chat-api.com/instance154076/qr_code?token=j2pm4q777tr4udtk'
 
-          const url = `https://api.chat-api.com/instance154076/qr_code?token=j2pm4q777tr4udtk`
+          const url = `${CHATAPI_URL}/qr_code?token=j2pm4q777tr4udtk`
           await axios.get(url, {responseType: 'arraybuffer'}).then((r) => {
             console.log(r.data)
             if(r.status === 200){
@@ -165,7 +169,7 @@
         async sendMessage() {
           this.message.status = null
           this.message.status = 'enviando...'
-          const url = `https://api.chat-api.com/instance154076/sendMessage?token=j2pm4q777tr4udtk`
+          const url = `${CHATAPI_URL}/sendMessage?token=j2pm4q777tr4udtk`
           const params = {
             phone: this.message.phone,
             body: this.message.body,
@@ -200,7 +204,7 @@
           }
         },
         async logout(){
-          const url = `https://api.chat-api.com/instance154076/logout?token=j2pm4q777tr4udtk`
+          const url = `${CHATAPI_URL}/logout?token=j2pm4q777tr4udtk`
           const params = {}
           await axios.post(url, params).then((r) => {
             console.log(r.data)
