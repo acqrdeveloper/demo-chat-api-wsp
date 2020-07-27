@@ -41,10 +41,10 @@ export default {
 
 
 
-    this.statusConenction(app, api)
-    this.hookChanges(app, api)
+    this.statusConenction(app)
+    this.hookChanges(app)
   },
-  statusConenction(app, api){
+  statusConenction(app){
     app.get('/connect', (req, res) => res.send('Connected'))
   },
   hookChanges(app, api){
