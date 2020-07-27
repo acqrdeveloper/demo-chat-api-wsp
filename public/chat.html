@@ -20,11 +20,10 @@
     <!--Fuera de Sesión-->
     <template v-if="!qr.used">
         <label>
-            <span>Code QR Whatsapp:</span>
+            <span>Code QR Whatsapp: <b>Fuera de sesión...</b></span>
             <p>
                 <button type="button" @click="getCodeQR()">Obtener Code QR</button>
                 <button type="button" @click="clearCodeQR()">Limpiar Code QR</button>
-                <button type="button" @click="logout()">Cerrar Sesion</button>
             </p>
         </label>
 
@@ -32,12 +31,21 @@
             <img :src="qr.image" alt="Not image" width="18%"/>
         </div>
 
-        <p><hr></p>
+
     </template>
 
 
     <!--En Sesión-->
     <template v-if="qr.used">
+        <label>
+            <span>Code QR Whatsapp: <b>En sesión...</b></span>
+            <p>
+                <button type="button" @click="logout()">Cerrar Sesion</button>
+            </p>
+        </label>
+
+        <p><hr></p>
+
         <label>
             <span>Enviar Mensaje:</span>
             <p>
