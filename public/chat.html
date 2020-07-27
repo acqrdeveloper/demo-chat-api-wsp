@@ -108,14 +108,13 @@
         axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
       },
       async created(){
-        // axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
         await this.load()
-        // await this.startInterval()
+        await this.startInterval()
       },
       methods: {
-        async getWebhook(){
-          const url = `${API_URL}/mywebhook/chat_api`
-          await axios.post(url).then((r)=>{
+        async getWebhookTmp(){
+          const url = `${API_URL}/mywebhook/chat_api/data`
+          await axios.get(url).then((r)=>{
             console.log(r)
             console.log(r.data)
           }).catch((e)=>{
@@ -124,8 +123,8 @@
         },
         async startInterval(){
           setInterval(async ()=>{
-              await this.getWebhook()
-          }, 5000)
+              await this.getWebhookTmp()
+          }, 1000)
         },
         async load() {
           await this.getStatusConnection()
