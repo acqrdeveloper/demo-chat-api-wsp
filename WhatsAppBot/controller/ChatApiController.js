@@ -47,7 +47,7 @@ export default {
   statusConenction(app){
     app.get('/connect', (req, res) => res.send('Connected'))
   },
-  hookChanges(app, api){
+  hookChanges(app){
     app.post('/mywebhook/chat_api', (req, res) => {
         console.log('[LOG] hookChanges', req.data)
         // tmpData.data = req.data
