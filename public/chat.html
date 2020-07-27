@@ -114,7 +114,7 @@
       },
       methods: {
         async getWebhook(){
-          const url = `/mywebhook/chat_api`
+          const url = `${API_URL}/mywebhook/chat_api`
           await axios.post(url).then((r)=>{
             console.log(r)
             console.log(r.data)
