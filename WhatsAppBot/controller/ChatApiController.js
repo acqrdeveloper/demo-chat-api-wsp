@@ -49,9 +49,9 @@ export default {
   },
   hookChanges(app){
     app.post('/mywebhook/chat_api', (req, res) => {
-        console.log('[LOG] hookChanges', req.data)
+        console.log('[LOG] hookChanges', req)
         // tmpData.data = req.data
-        res.send(req.data)
+        res.send(req)
     })
   },
 
