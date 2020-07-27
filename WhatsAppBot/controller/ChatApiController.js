@@ -1,42 +1,62 @@
 
-var ChatApiSdk = require('chat_api_sdk');
+const ChatApiSdk = require('chat_api_sdk');
+const axios = require('axios')
 
 export default {
   load(app){
 
-    var defaultClient = ChatApiSdk.ApiClient.instance;
-// Configure API key authorization: instanceId
-    var instanceId = defaultClient.authentications['instanceId'];
-    instanceId.apiKey = "YOUR API KEY"
-// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
-//instanceId.apiKeyPrefix['instanceId'] = "Token"
-// Configure API key authorization: token
-    var token = defaultClient.authentications['token'];
-    token.apiKey = "YOUR API KEY"
-// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
-//token.apiKeyPrefix['token'] = "Token"
+    const defaultClient = ChatApiSdk.ApiClient.instance;
+    console.log("defaultClient", defaultClient)
 
-    var api = new ChatApiSdk.Class1InstanceApi()
-    var callback = function(error, data, response) {
-      if (error) {
-        console.error(error);
-      } else {
-        console.log('API called successfully. Returned data: ' + data);
-      }
-    };
-    api.expiry(callback);
+    // Configure API key authorization: instanceId
+    const instanceId = defaultClient.authentications['instanceId'];
+    instanceId.apiKey = "instance154076"
 
-    this.statusConenction(app)
-    this.sendMessage(app)
-    this.getCodeQR(app)
+    // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+    //instanceId.apiKeyPrefix['instanceId'] = "Token"
+    // Configure API key authorization: token
+    const token = defaultClient.authentications['token'];
+    token.apiKey = "j2pm4q777tr4udtk"
+
+    // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
+    //token.apiKeyPrefix['token'] = "Token"
+
+    const api = new ChatApiSdk.Class1InstanceApi
+
+    // var callback = function(error, data, response) {
+    //   if (error) {
+    //     console.error(error);
+    //   } else {
+    //     console.log('API called successfully. Returned data: ' + data);
+    //   }
+    // };
+    // api.expiry(callback);
+
+    this.statusConenction(app, api)
+    this.sendMessage(app, api)
+    this.getCodeQR(app, api)
   },
-  statusConenction(app){
+  statusConenction(app, api){
     app.get('/connect', (req, res) => res.send('Connected'))
   },
-  sendMessage(app){
+  sendMessage(app, api){
     app.get('/chat', (req, res) => res.send('Test started'))
   },
-  getCodeQR(app){
-    app.get('/chat', (req, res) => res.send('Test started'))
+  getCodeQR(app, api){
+    app.get('/qr/code', (req, res) => {
+      axios.get('https://api.chat-api.com/instance154076/qr_code?token=j2pm4q777tr4udtk').then((r) => {
+        console.log('getCodeQR', r.data)
+        res.send(r.data)
+      }).catch((e) => {
+        res.send(e)
+      })
+    })
+
+    // api.
+    // const url = `https://api.chat-api.com/instance123/qr_code`
+    // axios.get()
+
+
+
   },
 }

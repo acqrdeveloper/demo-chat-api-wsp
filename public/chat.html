@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -14,14 +14,57 @@
     <div>
         <p>Status to Chat-API: {{status_connected}}</p>
     </div>
+
+    <p><hr></p>
+
     <label>
-        <span>Obtener code QR</span>
-        <button type="button" @click="getCodeQR()">Obtener Code QR</button>
-        <button type="button" @click="clearCodeQR()">Limpiar Code QR</button>
+        <span>Code QR Whatsapp:</span>
+        <p>
+            <button type="button" @click="getCodeQR()">Obtener Code QR</button>
+            <button type="button" @click="clearCodeQR()">Limpiar Code QR</button>
+            <button type="button" @click="logout()">Cerrar Sesion</button>
+        </p>
     </label>
+
     <div>
-        <img :src="image.qr" alt="Not image" width="25%"/>
+        <img :src="image.qr" alt="Not image" width="18%"/>
     </div>
+
+    <p><hr></p>
+
+    <!--<template v-if="code_qr_used">-->
+        <label>
+            <span>Enviar Mensaje:</span>
+            <p>
+                <input type="text" v-model="message.phone" placeholder="Phone">
+            </p>
+            <p>
+                <label>
+                    <input type="checkbox" name="rd"
+                           v-model="files.image.status" @change="selectedFile(1)" :disabled="files.pdf.status || files.audio.status">
+                    Archivo imagen
+                </label>
+                <label>
+                    <input type="checkbox" name="rd"
+                           v-model="files.pdf.status" @change="selectedFile(2)" :disabled="files.image.status || files.audio.status">
+                    Archivo pdf
+                </label>
+                <label>
+                    <input type="checkbox" name="rd"
+                           v-model="files.audio.status" @change="selectedFile(3)" :disabled="files.image.status || files.pdf.status">
+                    Archivo audio
+                </label>
+            </p>
+            <p v-if="files.image.status || files.pdf.status">
+                <input type="text" v-model="message.filename" placeholder="Filename">
+            </p>
+            <p>
+                <textarea name="" id="" cols="100" rows="5" v-model="message.body" placeholder="Body"></textarea>
+            </p>
+            <button type="button" @click="sendMessage()">Enviar mensaje</button> <span>{{message.status}}</span>
+        </label>
+    <!--</template>-->
+
 </div>
 
 <script>
@@ -29,12 +72,33 @@
       el: '#app',
       data: ()=>({
         status_connected: 'Disconnected',
+        code_qr_used: false,
         input: {
             message: null,
         },
         image:{
-          qr: 'https://app.chat-api.com/assets/images/example_qr_code.png'
-        }
+          qr: null,
+        },
+        message:{
+          phone: '51994905237',
+          body: null,
+          status: null,
+          filename: null
+        },
+        files: {
+          image: {
+            status: false,
+            url: 'https://i2.wp.com/velozityweb.com/blog/wp-content/uploads/2019/02/bootstrap-4-logo.jpg',
+          },
+          pdf: {
+            status: false,
+            url: 'http://www.wiener.edu.pe/manuales/4to-ciclo/programacion-web-2/curso-practico-de-javascript.pdf',
+          },
+          audio: {
+            status: false,
+            url: 'http://www.wiener.edu.pe/manuales/4to-ciclo/programacion-web-2/curso-practico-de-javascript.pdf',
+          },
+        },
       }),
       mounted(){
         axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
@@ -42,16 +106,30 @@
       async created(){
         // axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
         await this.load()
+        // await this.startInterval()
       },
       methods: {
+        async getWebhook(){
+          const url = `https://bin.chat-api.com/1109qj31`
+          await axios.post(url).then((r)=>{
+            console.log(r)
+            console.log(r.data)
+          }).catch((e)=>{
+            console.error("getWebhook",e)
+          })
+        },
+        async startInterval(){
+          setInterval(async ()=>{
+              await this.getWebhook()
+          }, 5000)
+        },
         async load() {
           await this.getStatusConnection()
-          // await this.getCodeQR()
         },
         async getStatusConnection () {
           this.status_connected = 'Connecting...'
           const url = `http://127.0.0.1:9000/connect`
-          axios.get(url).then((r) => {
+          await axios.get(url).then((r) => {
             setTimeout(() => {
               this.status_connected = r.data
             }, 1500)
@@ -61,19 +139,77 @@
           })
         },
         async getCodeQR () {
-          // const url = `http://127.0.0.1:9000/chat`
-          // const params = {
-          //   params: {},
-          // }
-          // axios.get(url, params).then((r) => {
-          //   this.input.message = r.data
-          // }).catch((e) => {
-          //   console.error(e)
-          // })
-          this.image.qr = 'https://app.chat-api.com/assets/images/example_qr_code.png'
+          // this.image.qr = 'https://api.chat-api.com/instance154076/qr_code?token=j2pm4q777tr4udtk'
+
+          const url = `https://api.chat-api.com/instance154076/qr_code?token=j2pm4q777tr4udtk`
+          await axios.get(url, {responseType: 'arraybuffer'}).then((r) => {
+            console.log(r.data)
+            if(r.status === 200){
+
+              let blob = new Blob(
+                [r.data],
+                {type: r.headers['content-type']}
+              )
+              // let imgUrl = URL.createObjectURL(blob)
+              this.image.qr = URL.createObjectURL(blob)
+
+            //   this.message.status = 'mensaje enviado'
+            }
+          }).catch((e) => {
+            console.error(e)
+          })
         },
         async clearCodeQR (){
           this.image.qr = null
+        },
+        async sendMessage() {
+          this.message.status = null
+          this.message.status = 'enviando...'
+          const url = `https://api.chat-api.com/instance154076/sendMessage?token=j2pm4q777tr4udtk`
+          const params = {
+            phone: this.message.phone,
+            body: this.message.body,
+          }
+
+          //Mensaje avanzado
+          if(this.files.image.status) params.filename = this.message.filename
+          if(this.files.pdf.status) params.filename = this.message.filename
+
+          await axios.post(url, params).then((r) => {
+            console.log(r.data)
+            if(r.status === 200){
+              this.message.status = 'mensaje enviado'
+            }
+          }).catch((e) => {
+            console.error(e)
+            this.message.status = 'no enviado'
+          })
+        },
+        selectedFile(type){
+          this.message.body = null
+          switch(type){
+            case 1:
+              if(this.files.image.status) this.message.body = this.files.image.url
+              break
+            case 2:
+              if(this.files.pdf.status) this.message.body = this.files.pdf.url
+                break
+            case 3:
+              if(this.files.audio.status) this.message.body = this.files.audio.url
+                break
+          }
+        },
+        async logout(){
+          const url = `https://api.chat-api.com/instance154076/logout?token=j2pm4q777tr4udtk`
+          const params = {}
+          await axios.post(url, params).then((r) => {
+            console.log(r.data)
+            // if(r.status === 200){
+            //   this.message.status = 'mensaje enviado'
+            // }
+          }).catch((e) => {
+            console.error(e)
+          })
         }
       },
     })
