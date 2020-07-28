@@ -19,21 +19,20 @@
 
     <!--Fuera de Sesión-->
     <template v-if="!qr.used">
-        <label>
+        <p>
             <span>* Code QR Whatsapp: <b>Fuera de sesión...</b></span>
-            <p>
-                <button type="button" @click="getCodeQR()" :disabled="button.qr.disabled || qr.loading">Obtener Code QR</button> <span>{{button.qr.status}}</span>
-            </p>
-        </label>
+        </p>
 
-        <div>
+        <button type="button" @click="getCodeQR()" :disabled="button.qr.disabled || qr.loading">Obtener Code QR</button> <span>{{button.qr.status}}</span>
+
+        <p>
             <template v-if="qr.loading">
                 <span>Iniciando sesion, espere...</span>
             </template>
             <template v-else>
                 <img :src="qr.image" alt="Not image" width="18%"/>
             </template>
-        </div>
+        </p>
 
 
     </template>
@@ -41,18 +40,18 @@
 
     <!--En Sesión-->
     <template v-if="qr.used">
-        <label>
-            <span>* Code QR Whatsapp: <b>En sesión...</b></span>
             <p>
-                <button type="button" @click="logout()" :disabled="button.logout.disabled">Cerrar Sesion</button> <span>{{button.logout.status}}</span>
+            <span>* Code QR Whatsapp: <b>En sesión...</b></span>
             </p>
-        </label>
+
+            <button type="button" @click="logout()" :disabled="button.logout.disabled">Cerrar Sesion</button> <span>{{button.logout.status}}</span>
 
         <p><hr></p>
 
         <template v-if="qr.used && !exit">
-        <label>
+            <p>
             <span>* Mensaje:</span>
+            </p>
             <p>
                 <input type="text" v-model="message.phone" placeholder="Phone">
             </p>
@@ -79,8 +78,9 @@
             <p>
                 <textarea name="" id="" cols="100" rows="5" v-model="message.body" placeholder="Body"></textarea>
             </p>
+
             <button type="button" @click="sendMessage()" :disabled="button.message.disabled">Enviar mensaje</button> <span>{{button.message.status}}</span>
-        </label>
+
         </template>
 
     </template>
@@ -151,7 +151,7 @@
         await this.startInterval()
       },
       methods: {
-
+        //Test
         async getWebhookTmp(){
           const url = `${API_URL}/mywebhook/chat_api/data`
           await axios.get(url).then(async (r)=>{
@@ -162,15 +162,6 @@
             if(r.data) {
               //Validar instancia
               if (r.data.instanceId === INSTANCE) {
-
-                /*
-              //validar estado previo
-              if (r.data.previous_status === 'loading') {
-                this.qr.loading = true
-              }else if (r.data.previous_status === 'got qr code') {
-                this.qr.loading = false
-              }
-              */
 
                 //Validar estado
                 if (r.data.status === 'got qr code') {
@@ -246,7 +237,7 @@
               await this.getWebhookTmp()
           }, 999)
         },
-
+        //Test
         async load() {
           await this.getStatusConnection()
         },
