@@ -213,12 +213,14 @@
                 else if (r.data.status === 'authenticated') {
 
                   if (r.data.previous_status === "authenticated") {
-                    this.button.logout.disabled = true
-                    this.button.message.disabled = true
-                    this.button.qr.disabled = false
-                    this.qr.image = null
-                    this.qr.used = true
-                    this.exit = true
+                    if(r.data.substatus === 'normal'){
+                        this.button.logout.disabled = true
+                        this.button.message.disabled = true
+                        this.button.qr.disabled = false
+                        this.qr.image = null
+                        this.qr.used = true
+                        this.exit = true
+                    }
                   }
 
                   if (r.data.previous_status === "loading") {
