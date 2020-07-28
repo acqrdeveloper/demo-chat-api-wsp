@@ -200,6 +200,8 @@
                   if (r.data.previous_status === "authenticated") {
                     this.button.qr.disabled = false
                     this.qr.used = false
+                    this.button.qr.status = null
+                    this.qr.loading = false
                     this.qr.image = null
                     this.exit = true
                   }
