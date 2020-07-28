@@ -40,7 +40,7 @@
 
 
     <!--En Sesión-->
-    <template v-if="qr.used">
+    <template v-if="qr.used && !exit">
         <label>
             <span>* Code QR Whatsapp: <b>En sesión...</b></span>
             <p>
@@ -135,9 +135,10 @@
           },
           logout: {
             disabled: false,
-            status: null
-          }
-        }
+            status: null,
+          },
+        },
+        exit: false,
       }),
       mounted(){
         axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
@@ -176,19 +177,24 @@
 
                 this.qr.loading = false
                 this.qr.used = false
+                this.qr.image = null
                 this.button.qr.disabled = false
                 this.button.qr.status = null
+                this.exit = false
 
               }
               else if (r.data.status === 'loading') {
 
                 if(r.data.previous_status === "authenticated"){
                   this.qr.used = false
+                  this.qr.image = null
+                  this.exit = true
                 }
 
                 if(r.data.previous_status === "got qr code"){
                   this.qr.loading = true
                   this.qr.used = false
+                  this.exit = false
                 }
                 // this.button.qr.disabled = false
                 // this.button.qr.status = null
@@ -318,7 +324,7 @@
             if(r.status === 200){
 
               this.button.logout.status = 'sesion cerrada'
-              //this.qr.used = false
+              this.exit = true
 
             }
             console.log(r.data)
