@@ -211,8 +211,6 @@
                     this.qr.used = false
                     this.exit = false
                   }
-                  // this.button.qr.disabled = false
-                  // this.button.qr.status = null
 
                 }
                 else if (r.data.status === 'authenticated') {
@@ -222,16 +220,18 @@
                     this.button.message.disabled = true
                     this.button.qr.disabled = false
                     this.qr.image = null
-                    this.exit = true
-                  } else {
                     this.qr.used = true
+                    this.exit = true
                   }
-                  // this.qr.loading = false
 
-                  // this.button.logout.disabled = false
-                  // this.button.message.disabled = false
-                  // this.button.qr.disabled = false
-                  // this.button.qr.status = null
+                  if (r.data.previous_status === "loading") {
+                    this.button.logout.disabled = false
+                    this.button.message.disabled = false
+                    this.button.qr.disabled = true
+                    this.qr.image = null
+                    this.qr.used = true
+                    this.exit = false
+                  }
 
                 }
 
