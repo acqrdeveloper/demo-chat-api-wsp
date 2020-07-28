@@ -81,6 +81,13 @@
 
             <button type="button" @click="sendMessage()" :disabled="button.message.disabled">Enviar mensaje</button> <span>{{button.message.status}}</span>
 
+            <p><hr></p>
+
+            <p>
+                <span>* Colas:</span>
+            </p>
+
+
         </template>
 
     </template>
@@ -287,6 +294,11 @@
           this.button.message.status = 'enviando...'
 
           const url = `${CHATAPI_URL}/sendMessage?token=${CHATAPI_TOKEN}`
+          const headers = {headers: {'Content-Type': 'multipart/form-data'}}
+
+          let formData = new FormData()
+          formData.append('phone', this.message.phone)//POST
+          formData.append('body', this.message.body)//POST
 
           //Mensaje basico
           const params = {
@@ -294,10 +306,16 @@
             body: this.message.body,
           }
           //Mensaje avanzado
-          if(this.files.image.status) params.filename = this.message.filename
-          if(this.files.pdf.status) params.filename = this.message.filename
+          if(this.files.image.status){
+          formData.append('filename', this.message.filename)//POST
+            params.filename = this.message.filename
+          }
+          if(this.files.pdf.status){
+              formData.append('filename', this.message.filename)//POST
+            params.filename = this.message.filename
+          }
 
-          await axios.post(url, params).then((r) => {
+          await axios.post(url, formData, headers).then((r) => {
             console.log(r.data)
             if(r.status === 200){
 
