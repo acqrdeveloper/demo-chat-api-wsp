@@ -175,12 +175,13 @@
               if (r.data.status === 'got qr code') {
 
                 if (r.data.substatus === 'expired') {
+                    this.button.qr.disabled = false
                     this.qr.image = null
                 }
 
                 this.qr.loading = false
                 this.qr.used = false
-                this.button.qr.disabled = false
+                // this.button.qr.disabled = false
                 this.button.qr.status = null
                 this.exit = false
 
@@ -250,7 +251,7 @@
             console.log(r.data)
             if(r.status === 200){
 
-              this.button.qr.disabled = false
+              // this.button.qr.disabled = false
               this.button.qr.status = 'QR obtenido'
 
               let blob = new Blob(
