@@ -177,7 +177,6 @@
 
                 this.qr.loading = false
                 this.qr.used = false
-                this.qr.image = null
                 this.button.qr.disabled = false
                 this.button.qr.status = null
                 this.exit = false
@@ -324,6 +323,7 @@
             if(r.status === 200){
 
               this.button.logout.status = 'sesion cerrada'
+              this.qr.image = null
               this.exit = true
 
             }
