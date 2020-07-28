@@ -22,7 +22,7 @@
         <label>
             <span>* Code QR Whatsapp: <b>Fuera de sesión...</b></span>
             <p>
-                <button type="button" @click="getCodeQR()" :disabled="button.qr.disabled">Obtener Code QR</button>
+                <button type="button" @click="getCodeQR()" :disabled="button.qr.disabled">Obtener Code QR</button> <span>{{button.qr.status}}</span>
             </p>
         </label>
 
@@ -122,6 +122,7 @@
         button: {
           qr:{
             disabled: false,
+            status: null
           },
           message: {
             disabled: false,
@@ -221,6 +222,7 @@
         async getCodeQR () {
 
           this.button.qr.disabled = true
+          this.button.qr.status = 'obteniendo QR...'
 
           const url = `${CHATAPI_URL}/qr_code?token=${CHATAPI_TOKEN}`
           await axios.get(url, {responseType: 'arraybuffer'}).then((r) => {
@@ -228,6 +230,7 @@
             if(r.status === 200){
 
               this.button.qr.disabled = false
+              this.button.qr.status = 'QR obtenido'
 
               let blob = new Blob(
                 [r.data],
@@ -240,11 +243,9 @@
 
             console.error(e)
             this.button.qr.disabled = false
+            this.button.qr.status = 'error al obtener QR'
 
           })
-        },
-        async clearCodeQR (){
-          this.image.qr = null
         },
         async sendMessage() {
 
