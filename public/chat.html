@@ -177,20 +177,19 @@
 
                   if (r.data.substatus === 'expired') {
                     this.button.qr.disabled = false
+                    this.button.qr.status = null
                     this.qr.image = null
                   }
 
                   if (r.data.previous_status === "got qr code") {
                     this.qr.loading = false
                     this.qr.used = false
-                    this.button.qr.status = null
                     this.exit = false
                   }
 
                   if (r.data.previous_status === "loading") {
                     this.qr.loading = false
                     this.qr.used = false
-                    // this.button.qr.status = null
                     this.exit = false
                   }
 
