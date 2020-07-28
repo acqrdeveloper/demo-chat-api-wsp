@@ -22,7 +22,7 @@
         <label>
             <span>Code QR Whatsapp: <b>Fuera de sesión...</b></span>
             <p>
-                <button type="button" @click="getCodeQR()">Obtener Code QR</button>
+                <button type="button" @click="getCodeQR()" :disabled="button.qr.disabled">Obtener Code QR</button>
             </p>
         </label>
 
@@ -96,13 +96,9 @@
           image: null
         },
         status_connected: 'Disconnected',
-        // code_qr_used: false,
         input: {
             message: null,
         },
-        // image:{
-        //   qr: null,
-        // },
         message:{
           phone: '51994905237',
           body: null,
@@ -123,6 +119,15 @@
             url: 'http://www.wiener.edu.pe/manuales/4to-ciclo/programacion-web-2/curso-practico-de-javascript.pdf',
           },
         },
+        button: {
+          qr:{
+            disabled: false,
+          },
+          message: {
+            disabled: false,
+            status: null
+          }
+        }
       }),
       mounted(){
         axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
@@ -211,12 +216,15 @@
           })
         },
         async getCodeQR () {
-          // this.image.qr = 'https://api.chat-api.com/instance154076/qr_code?token=j2pm4q777tr4udtk'
+
+          this.button.qr.disabled = true
 
           const url = `${CHATAPI_URL}/qr_code?token=${CHATAPI_TOKEN}`
           await axios.get(url, {responseType: 'arraybuffer'}).then((r) => {
             console.log(r.data)
             if(r.status === 200){
+
+              this.button.qr.disabled = false
 
               let blob = new Blob(
                 [r.data],
@@ -226,21 +234,27 @@
               this.qr.image = URL.createObjectURL(blob)
             }
           }).catch((e) => {
+
             console.error(e)
+            this.button.qr.disabled = false
+
           })
         },
         async clearCodeQR (){
           this.image.qr = null
         },
         async sendMessage() {
-          this.message.status = null
-          this.message.status = 'enviando...'
+
+          this.button.message.disabled = true
+          this.button.message.status = 'enviando...'
+
           const url = `${CHATAPI_URL}/sendMessage?token=${CHATAPI_TOKEN}`
+
+          //Mensaje basico
           const params = {
             phone: this.message.phone,
             body: this.message.body,
           }
-
           //Mensaje avanzado
           if(this.files.image.status) params.filename = this.message.filename
           if(this.files.pdf.status) params.filename = this.message.filename
@@ -248,11 +262,17 @@
           await axios.post(url, params).then((r) => {
             console.log(r.data)
             if(r.status === 200){
-              this.message.status = 'mensaje enviado'
+
+              this.button.message.status = 'mensaje enviado'
+              this.button.message.disabled = false
+
             }
           }).catch((e) => {
+
             console.error(e)
-            this.message.status = 'no enviado'
+            this.button.message.disabled = false
+            this.button.message.status = 'no enviado'
+
           })
         },
         selectedFile(type){
