@@ -12,7 +12,7 @@
 <body>
 <div id="app">
     <div>
-        <p>Status to Chat-API: {{status_connected}}</p>
+        <p>* Status to Chat-API: {{status_connected}}</p>
     </div>
 
     <p><hr></p>
@@ -20,7 +20,7 @@
     <!--Fuera de Sesión-->
     <template v-if="!qr.used">
         <label>
-            <span>Code QR Whatsapp: <b>Fuera de sesión...</b></span>
+            <span>* Code QR Whatsapp: <b>Fuera de sesión...</b></span>
             <p>
                 <button type="button" @click="getCodeQR()" :disabled="button.qr.disabled">Obtener Code QR</button>
             </p>
@@ -37,16 +37,16 @@
     <!--En Sesión-->
     <template v-if="qr.used">
         <label>
-            <span>Code QR Whatsapp: <b>En sesión...</b></span>
+            <span>* Code QR Whatsapp: <b>En sesión...</b></span>
             <p>
-                <button type="button" @click="logout()">Cerrar Sesion</button>
+                <button type="button" @click="logout()" :disabled="button.logout.disabled">Cerrar Sesion</button>
             </p>
         </label>
 
         <p><hr></p>
 
         <label>
-            <span>Enviar Mensaje:</span>
+            <span>* Mensaje:</span>
             <p>
                 <input type="text" v-model="message.phone" placeholder="Phone">
             </p>
@@ -73,7 +73,7 @@
             <p>
                 <textarea name="" id="" cols="100" rows="5" v-model="message.body" placeholder="Body"></textarea>
             </p>
-            <button type="button" @click="sendMessage()">Enviar mensaje</button> <span>{{message.status}}</span>
+            <button type="button" @click="sendMessage()" :disabled="button.message.disabled">Enviar mensaje</button> <span>{{button.message.status}}</span>
         </label>
     </template>
 
@@ -126,6 +126,9 @@
           message: {
             disabled: false,
             status: null
+          },
+          logout: {
+            disabled: false,
           }
         }
       }),
@@ -263,7 +266,8 @@
             console.log(r.data)
             if(r.status === 200){
 
-              this.button.message.status = 'mensaje enviado'
+              if(r.data.sent) this.button.message.status = 'mensaje enviado'
+              else if(!r.data.sent) this.button.message.status = 'no enviado'
               this.button.message.disabled = false
 
             }
