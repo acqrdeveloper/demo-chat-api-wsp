@@ -39,7 +39,7 @@
         <label>
             <span>* Code QR Whatsapp: <b>En sesión...</b></span>
             <p>
-                <button type="button" @click="logout()" :disabled="button.logout.disabled">Cerrar Sesion</button>
+                <button type="button" @click="logout()" :disabled="button.logout.disabled">Cerrar Sesion</button> <span>{{button.logout.status}}</span>
             </p>
         </label>
 
@@ -130,6 +130,7 @@
           },
           logout: {
             disabled: false,
+            status: null
           }
         }
       }),
@@ -141,6 +142,7 @@
         await this.startInterval()
       },
       methods: {
+
         async getWebhookTmp(){
           const url = `${API_URL}/mywebhook/chat_api/data`
           await axios.get(url).then(async (r)=>{
@@ -170,12 +172,14 @@
                 this.qr.used = false
                 this.qr.loading = false
 
-              } else if (r.data.status === 'loading') {
+              }
+              else if (r.data.status === 'loading') {
 
                 this.qr.used = false
                 this.qr.loading = true
 
-              } else if (r.data.status === 'authenticated'){
+              }
+              else if (r.data.status === 'authenticated'){
 
                 this.qr.loading = false
                 this.qr.used = true
@@ -202,8 +206,9 @@
         async startInterval(){
           setInterval(async ()=>{
               await this.getWebhookTmp()
-          }, 1000)
+          }, 5000)
         },
+
         async load() {
           await this.getStatusConnection()
         },
@@ -295,12 +300,26 @@
           }
         },
         async logout(){
+
+          this.button.logout.disabled = true
+          this.button.logout.status = 'cerrando sesion...'
+
           const url = `${CHATAPI_URL}/logout?token=${CHATAPI_TOKEN}`
           const params = {}
           await axios.post(url, params).then((r) => {
+            if(r.status === 200){
+
+              this.button.logout.status = 'sesion cerrada'
+              this.qr.used = false
+
+            }
             console.log(r.data)
           }).catch((e) => {
+
             console.error(e)
+            this.button.logout.disabled = false
+            this.button.logout.status = 'error al cerrar sesion'
+
           })
         }
       },
