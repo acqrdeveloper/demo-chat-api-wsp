@@ -40,7 +40,7 @@
 
 
     <!--En Sesión-->
-    <template v-if="qr.used && !exit">
+    <template v-if="qr.used">
         <label>
             <span>* Code QR Whatsapp: <b>En sesión...</b></span>
             <p>
@@ -50,6 +50,7 @@
 
         <p><hr></p>
 
+        <template v-if="qr.used && !exit">
         <label>
             <span>* Mensaje:</span>
             <p>
@@ -80,6 +81,8 @@
             </p>
             <button type="button" @click="sendMessage()" :disabled="button.message.disabled">Enviar mensaje</button> <span>{{button.message.status}}</span>
         </label>
+        </template>
+
     </template>
 
 </div>
