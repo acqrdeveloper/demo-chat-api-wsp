@@ -22,7 +22,7 @@
         <label>
             <span>* Code QR Whatsapp: <b>Fuera de sesión...</b></span>
             <p>
-                <button type="button" @click="getCodeQR()" :disabled="button.qr.disabled">Obtener Code QR</button> <span>{{button.qr.status}}</span>
+                <button type="button" @click="getCodeQR()" :disabled="button.qr.disabled || qr.loading">Obtener Code QR</button> <span>{{button.qr.status}}</span>
             </p>
         </label>
 
@@ -176,31 +176,34 @@
 
                 this.qr.loading = false
                 this.qr.used = false
+                this.button.qr.disabled = false
+                this.button.qr.status = null
 
               }
               else if (r.data.status === 'loading') {
 
-                this.qr.loading = true
-                this.qr.used = false
+                if(r.data.previous_status === "authenticated"){
+                  this.qr.used = false
+                }
+
+                if(r.data.previous_status === "got qr code"){
+                  this.qr.loading = true
+                  this.qr.used = false
+                }
+                // this.button.qr.disabled = false
+                // this.button.qr.status = null
 
               }
               else if (r.data.status === 'authenticated'){
 
                 this.qr.loading = false
                 this.qr.used = true
+                this.button.logout.disabled = false
+                this.button.message.disabled = false
+                // this.button.qr.disabled = false
+                // this.button.qr.status = null
 
               }
-
-              /*
-              //Validar sub estado
-              if (r.data.substatus === 'loading') {
-                this.qr.loading = true
-              } else if (r.data.substatus === 'normal') {
-                this.qr.loading = false
-              } else if (r.data.substatus === 'authenticated'){
-                this.qr.loading = false
-              }
-              */
 
             }
 
@@ -315,7 +318,7 @@
             if(r.status === 200){
 
               this.button.logout.status = 'sesion cerrada'
-              window.location.reload(true)
+              //this.qr.used = false
 
             }
             console.log(r.data)
