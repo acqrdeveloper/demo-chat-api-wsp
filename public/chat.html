@@ -27,7 +27,12 @@
         </label>
 
         <div>
-            <img :src="qr.image" alt="Not image" width="18%"/>
+            <template v-if="qr.loading">
+                <span>Iniciando sesion, espere...</span>
+            </template>
+            <template v-else>
+                <img :src="qr.image" alt="Not image" width="18%"/>
+            </template>
         </div>
 
 
@@ -166,17 +171,17 @@
               if (r.data.status === 'got qr code') {
 
                 if (r.data.substatus === 'expired') {
-                  this.qr.image = null
+                    this.qr.image = null
                 }
 
-                this.qr.used = false
                 this.qr.loading = false
+                this.qr.used = false
 
               }
               else if (r.data.status === 'loading') {
 
-                this.qr.used = false
                 this.qr.loading = true
+                this.qr.used = false
 
               }
               else if (r.data.status === 'authenticated'){
@@ -310,6 +315,7 @@
             if(r.status === 200){
 
               this.button.logout.status = 'sesion cerrada'
+              this.qr.image = null
               this.qr.used = false
 
             }
