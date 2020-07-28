@@ -315,8 +315,7 @@
             if(r.status === 200){
 
               this.button.logout.status = 'sesion cerrada'
-              this.qr.image = null
-              this.qr.used = false
+              window.location.reload(true)
 
             }
             console.log(r.data)
