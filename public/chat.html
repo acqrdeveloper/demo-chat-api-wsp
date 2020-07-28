@@ -344,7 +344,7 @@
           await axios.post(url, params).then((r) => {
             if(r.status === 200){
 
-              this.button.logout.status = 'sesion cerrada, redirigiendo...'
+              this.button.logout.status = 'cerrando sesion, redirigiendo...'
               this.qr.image = null
               this.exit = true
 
