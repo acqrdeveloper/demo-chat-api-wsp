@@ -186,6 +186,13 @@
                   this.exit = false
                 }
 
+                if(r.data.previous_status === "loading"){
+                  this.button.qr.status = null
+                  this.qr.loading = false
+                  this.qr.used = false
+                  this.exit = false
+                }
+
               }
               else if (r.data.status === 'loading') {
 
