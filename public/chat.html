@@ -159,10 +159,11 @@
             console.log(r)
             console.log(r.data)
 
-            //Validar instancia
-            if(r.data.instanceId === INSTANCE) {
+            if(r.data) {
+              //Validar instancia
+              if (r.data.instanceId === INSTANCE) {
 
-              /*
+                /*
               //validar estado previo
               if (r.data.previous_status === 'loading') {
                 this.qr.loading = true
@@ -171,67 +172,68 @@
               }
               */
 
-              //Validar estado
-              if (r.data.status === 'got qr code') {
+                //Validar estado
+                if (r.data.status === 'got qr code') {
 
-                if (r.data.substatus === 'expired') {
-                  this.button.qr.disabled = false
-                  this.qr.image = null
+                  if (r.data.substatus === 'expired') {
+                    this.button.qr.disabled = false
+                    this.qr.image = null
+                  }
+
+                  if (r.data.previous_status === "got qr code") {
+                    this.qr.loading = false
+                    this.qr.used = false
+                    this.button.qr.status = null
+                    this.exit = false
+                  }
+
+                  if (r.data.previous_status === "loading") {
+                    this.qr.loading = false
+                    this.qr.used = false
+                    this.button.qr.status = null
+                    this.exit = false
+                  }
+
                 }
+                else if (r.data.status === 'loading') {
 
-                if(r.data.previous_status === "got qr code"){
-                  this.qr.loading = false
-                  this.qr.used = false
-                  this.button.qr.status = null
-                  this.exit = false
+                  if (r.data.previous_status === "authenticated") {
+                    this.button.qr.disabled = false
+                    this.qr.used = false
+                    this.qr.image = null
+                    this.exit = true
+                  }
+
+                  if (r.data.previous_status === "got qr code") {
+                    this.qr.loading = true
+                    this.qr.used = false
+                    this.exit = false
+                  }
+                  // this.button.qr.disabled = false
+                  // this.button.qr.status = null
+
                 }
+                else if (r.data.status === 'authenticated') {
 
-                if(r.data.previous_status === "loading"){
-                  this.qr.loading = false
-                  this.qr.used = false
-                  this.button.qr.status = null
-                  this.exit = false
+                  if (r.data.previous_status === "authenticated") {
+                    this.button.logout.disabled = true
+                    this.button.message.disabled = true
+                    this.button.qr.disabled = false
+                    this.qr.image = null
+                    this.exit = true
+                  } else {
+                    this.qr.used = true
+                  }
+                  // this.qr.loading = false
+
+                  // this.button.logout.disabled = false
+                  // this.button.message.disabled = false
+                  // this.button.qr.disabled = false
+                  // this.button.qr.status = null
+
                 }
 
               }
-              else if (r.data.status === 'loading') {
-
-                if(r.data.previous_status === "authenticated"){
-                  this.button.qr.disabled = false
-                  this.qr.used = false
-                  this.qr.image = null
-                  this.exit = true
-                }
-
-                if(r.data.previous_status === "got qr code"){
-                  this.qr.loading = true
-                  this.qr.used = false
-                  this.exit = false
-                }
-                // this.button.qr.disabled = false
-                // this.button.qr.status = null
-
-              }
-              else if (r.data.status === 'authenticated'){
-
-                if(r.data.previous_status === "authenticated"){
-                  this.button.logout.disabled = true
-                  this.button.message.disabled = true
-                  this.button.qr.disabled = false
-                  this.qr.image = null
-                  this.exit = true
-                }else{
-                  this.qr.used = true
-                }
-                // this.qr.loading = false
-
-                // this.button.logout.disabled = false
-                // this.button.message.disabled = false
-                // this.button.qr.disabled = false
-                // this.button.qr.status = null
-
-              }
-
             }
 
           }).catch((e)=>{

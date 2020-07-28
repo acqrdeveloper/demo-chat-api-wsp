@@ -11,6 +11,7 @@ export default {
     app.get('/connect', (req, res) => res.send('Connected'))
   },
   hookChanges(app){
+    tmpData = null
     app.post('/mywebhook/chat_api', (req, res) => {
         console.log('[LOG] hookChanges', req.body)
         tmpData = req.body
