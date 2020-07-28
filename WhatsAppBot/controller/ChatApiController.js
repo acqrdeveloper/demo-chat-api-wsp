@@ -22,6 +22,8 @@ export default {
     app.get('/mywebhook/chat_api/data', (req, res) => {
       // console.log('[LOG] hookChanges', req.body)
       res.send(tmpData)
+
+      tmpData = null
     })
   },
 }
