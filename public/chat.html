@@ -74,6 +74,7 @@
             </p>
             <p v-if="files.image.status || files.pdf.status">
                 <input type="text" v-model="message.filename" placeholder="Filename">
+                <input type="text" v-model="message.caption" placeholder="Caption">
             </p>
             <p>
                 <textarea name="" id="" cols="100" rows="5" v-model="message.body" placeholder="Body"></textarea>
@@ -115,10 +116,12 @@
             message: null,
         },
         message:{
-          phone: '51994905237',
+          uri: "/sendMessage",
+          phone: '51955588297',
           body: null,
           status: null,
-          filename: null
+          filename: null,
+          caption: null
         },
         files: {
           image: {
@@ -131,7 +134,7 @@
           },
           audio: {
             status: false,
-            url: 'http://www.wiener.edu.pe/manuales/4to-ciclo/programacion-web-2/curso-practico-de-javascript.pdf',
+            url: 'https://upload.wikimedia.org/wikipedia/commons/2/24/Sahan_Test_Audio.ogg',
           },
         },
         button: {
@@ -155,7 +158,8 @@
       },
       async created(){
         await this.load()
-        await this.startInterval()
+        this.qr.used = true
+        // await this.startInterval()
       },
       methods: {
         //Test
@@ -295,27 +299,29 @@
           this.button.message.disabled = true
           this.button.message.status = 'enviando...'
 
-          const url = `${CHATAPI_URL}/sendMessage?token=${CHATAPI_TOKEN}`
+          const url = `${CHATAPI_URL}${this.message.uri}?token=${CHATAPI_TOKEN}`
           const headers = {headers: {'Content-Type': 'multipart/form-data'}}
 
           let formData = new FormData()
-          formData.append('phone', this.message.phone)//POST
-          formData.append('body', this.message.body)//POST
 
           //Mensaje basico
-          const params = {
-            phone: this.message.phone,
-            body: this.message.body,
+          formData.append('phone', this.message.phone)//POST
+          if(!this.files.audio.status){
+            formData.append('body', this.message.body)//POST
+          }else{
+            formData.append('audio', this.files.audio.url)//POST
           }
+
           //Mensaje avanzado
           if(this.files.image.status){
-          formData.append('filename', this.message.filename)//POST
-            params.filename = this.message.filename
+            formData.append('filename', this.message.filename)//POST
+            formData.append('caption', this.message.caption)//POST
           }
           if(this.files.pdf.status){
-              formData.append('filename', this.message.filename)//POST
-            params.filename = this.message.filename
+            formData.append('filename', this.message.filename)//POST
+            formData.append('caption', this.message.caption)//POST
           }
+
 
           await axios.post(url, formData, headers).then((r) => {
             console.log(r.data)
@@ -336,16 +342,26 @@
         },
         selectedFile(type){
           this.message.body = null
+          this.message.uri = "/sendMessage"
           switch(type){
             case 1:
-              if(this.files.image.status) this.message.body = this.files.image.url
+              if(this.files.image.status) {
+                this.message.uri = "/sendFile"
+                this.message.body = this.files.image.url
+              }
               break
             case 2:
-              if(this.files.pdf.status) this.message.body = this.files.pdf.url
-                break
+              if(this.files.pdf.status){
+                this.message.uri = "/sendFile"
+                this.message.body = this.files.pdf.url
+              }
+              break
             case 3:
-              if(this.files.audio.status) this.message.body = this.files.audio.url
-                break
+              if(this.files.audio.status){
+                this.message.uri = "/sendPTT"
+                this.message.body = this.files.audio.url
+              }
+              break
           }
         },
         async logout(){
