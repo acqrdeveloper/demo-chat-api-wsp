@@ -187,8 +187,8 @@
       },
       async created(){
         await this.load()
-        this.qr.used = true
-        // await this.startInterval()
+        // this.qr.used = true
+        await this.startInterval()
         setInterval(()=>{
           this.getQueues()
         },3500)
