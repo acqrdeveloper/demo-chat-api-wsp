@@ -87,6 +87,31 @@
             <p>
                 <span>* Colas:</span>
             </p>
+            <p>
+                <span>Total: <strong>{{queues.total}}</strong></span> / <span>Actualizado: {{(new Date()).getTime()}}</span>
+            </p>
+            <table border="1">
+                <tr>
+                    <th>Id</th>
+                    <th>Body</th>
+                    <th>Type</th>
+                    <th>LastTry</th>
+                    <th>Metadata</th>
+                </tr>
+                <template v-for="(v) in queues.data">
+                <tr>
+                    <td width="20%">{{v.id}}</td>
+                    <td width="30%">{{v.body}}</td>
+                    <td width="10%">{{v.type}}</td>
+                    <td width="10%">{{v.last_try}}</td>
+                    <td width="30%">{{v.metadata}}</td>
+                </tr>
+                </template>
+            </table>
+            <br>
+            <br>
+            <br>
+
 
 
         </template>
@@ -152,6 +177,10 @@
           },
         },
         exit: false,
+        queues:{
+          total: 0,
+          data: []
+        }
       }),
       mounted(){
         axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
@@ -160,9 +189,12 @@
         await this.load()
         this.qr.used = true
         // await this.startInterval()
+        setInterval(()=>{
+          this.getQueues()
+        },3500)
       },
       methods: {
-        //Test
+        // Start Interval
         async getWebhookTmp(){
           const url = `${API_URL}/mywebhook/chat_api/data`
           await axios.get(url).then(async (r)=>{
@@ -250,7 +282,7 @@
               await this.getWebhookTmp()
           }, 999)
         },
-        //Test
+        // End Interval
         async load() {
           await this.getStatusConnection()
         },
@@ -385,6 +417,25 @@
             console.error(e)
             this.button.logout.disabled = false
             this.button.logout.status = 'error al cerrar sesion'
+
+          })
+        },
+        async getQueues(){
+
+          const url = `${CHATAPI_URL}/showMessagesQueue?token=${CHATAPI_TOKEN}`
+          const params = {}
+          await axios.get(url, params).then((r) => {
+            if(r.status === 200){
+
+
+              this.queues.total = r.data.totalMessages
+              this.queues.data = r.data.first100
+
+            }
+            console.log(r.data)
+          }).catch((e) => {
+
+            console.error(e)
 
           })
         }
