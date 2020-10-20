@@ -5,7 +5,7 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Chat-API</title>
+    <title>Facebook Messenger - API</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
 </head>
@@ -24,7 +24,7 @@
     <p><hr></p>
 
     <!--Fuera de Sesión-->
-    <template v-if="loggedIn">
+    <template v-if="!loggedIn">
         <p>
             <span>* Facebook Messenger: <b>Fuera de sesión...</b></span>
         </p>
@@ -36,7 +36,7 @@
 
 
     <!--En Sesión-->
-    <template v-if="!loggedIn">
+    <template v-if="loggedIn">
         <p>
             <span>* Página de Facebook Messenger: <b>En sesión...</b></span>
         </p>
@@ -45,7 +45,7 @@
 
         <p><hr></p>
 
-        <template v-if="!loggedIn">
+        <template v-if="loggedIn">
             <p>
                 <span>* Tipo Mensaje:</span>
             </p>
@@ -78,6 +78,11 @@
                            v-model="files.radio.status" value="5" @change="typeMessage(5)" :disabled="files.image.status || files.pdf.status">
                     Archivo video
                 </label>
+                <label>
+                    <input type="radio" name="rd"
+                           v-model="files.radio.status" value="6" @change="typeMessage(6)" :disabled="files.image.status || files.pdf.status">
+                    Template
+                </label>
             </p>
 
             <p v-if="files.image.status || files.pdf.status">
@@ -95,36 +100,6 @@
             <button type="button" @click="sendMessage()" :disabled="button.message.disabled">Enviar mensaje</button> <span>{{button.message.status}}</span>
 
             <p><hr></p>
-
-            <p>
-                <span>* Colas:</span>
-            </p>
-            <p>
-                <span>Total: <strong>{{queues.total}}</strong></span> / <span>Actualizado: {{(new Date()).getTime()}}</span>
-            </p>
-            <table border="1">
-                <tr>
-                    <th>Id</th>
-                    <th>Body</th>
-                    <th>Type</th>
-                    <th>LastTry</th>
-                    <th>Metadata</th>
-                </tr>
-                <template v-for="(v) in queues.data">
-                    <tr>
-                        <td width="20%">{{v.id}}</td>
-                        <td width="30%">{{v.body}}</td>
-                        <td width="10%">{{v.type}}</td>
-                        <td width="10%">{{v.last_try}}</td>
-                        <td width="30%">{{v.metadata}}</td>
-                    </tr>
-                </template>
-            </table>
-            <br>
-            <br>
-            <br>
-
-
 
         </template>
 
@@ -359,13 +334,50 @@
             },
           }
         }
+        //Template
+        if(this.files.radio.status == 6){
+          params.message = {
+            attachment: {
+              type: 'template',
+              payload: {
+                 template_type: 'generic',
+                 elements:[
+                    {
+                       title:'Inbox',
+                       image_url:'https://www.eniun.com/wp-content/uploads/Bootstrap-descargar-instalar.png',
+                       subtitle:'Inbox powered by Securitec',
+                       default_action:{
+                          type:'web_url',
+                          url:'https://inbox.securitec.pe',
+                       },
+                       buttons:[
+                          {
+                             type:'web_url',
+                             url:'https://inbox.securitec.pe',
+                             title:'pay inbox #1',
+                          },
+                          {
+                             type:'web_url',
+                             url:'https://inbox.securitec.pe',
+                             title:'pay inbox #2',
+                          },
+                       ],
+                    },
+                 ],
+              },
+            },
+          }
+        }
 
         await axios.post(url, params, headers).then((r) => {
           console.log(r.data)
           if(r.status === 200){
 
-            if(r.data.sent) this.button.message.status = 'mensaje enviado'
-            else if(!r.data.sent) this.button.message.status = 'no enviado'
+            if(r.data.recipient_id)
+               this.button.message.status = 'mensaje enviado'
+            else
+               this.button.message.status = 'no enviado'
+
             this.button.message.disabled = false
 
           }
